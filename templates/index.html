@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>RealtyCheck – IntegriBot</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>RealtyCheck</h1>
+<div class="sub">Welcome to Oberoi Realty’s Integrity Challenge, hosted by <strong>IntegriBot</strong>. 🖤🤍</div>
+
+<div class="row">
+  <div class="col">
+    <label>Your name</label>
+    <input id="name" placeholder="e.g., Tanmay" />
+  </div>
+  <div class="col">
+    <label>Your role</label>
+    <input id="role" placeholder="e.g., Site Supervisor, HR, Sales, Legal, Finance..." />
+  </div>
+</div>
+
+<div style="margin-top:12px;">
+  <button id="genBtn">Generate scenario</button>
+  <button id="clearBtn" class="ghost" style="margin-left:8px;">Clear all</button>
+  <button id="lbBtn" class="ghost" style="float:right;">View leaderboard</button>
+</div>
+
+
+<div id="scenarioCard" class="chatbox" style="display:none;">
+  <div id="greet" class="dim"></div>
+  <hr/>
+  <div><strong>Scenario</strong></div>
+  <div id="scenarioText" style="margin-top:6px;"></div>
+  <label style="margin-top:12px;">Your response</label>
+  <textarea id="response" rows="6" placeholder="Type what you would do..."></textarea>
+  <div style="margin-top:8px;">
+    <button id="submitBtn">Submit response</button>
+  </div>
+</div>
+
+<div id="resultCard" class="chatbox" style="display:none;">
+  <div><strong>Evaluation by IntegriBot</strong></div>
+  <div id="feedback" style="margin-top:6px;"></div>
+
+  <!-- Integrity Meter -->
+  <div class="meter-wrap" style="margin-top:14px;">
+    <div class="meter-label">
+      <span>Integrity Meter</span>
+      <span id="meterVal">0 / 10</span>
+    </div>
+    <div class="meter">
+      <div id="meterBar" class="meter-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="mono dim" id="criteria" style="margin-top:8px;"></div>
+
+  <!-- Leaderboard submission -->
+  <div class="consent" style="margin-top:14px;">
+    <label class="inline">
+      <input type="checkbox" id="consent" />
+      I agree to display my name, role and score on the public leaderboard.
+    </label>
+  </div>
+  <div class="row" style="margin-top:8px;">
+    <div class="col"><button id="saveBtn">Save to leaderboard</button></div>
+    <div class="col" style="text-align:right;"><button id="againBtn" class="ghost">Try another scenario</button></div>
+  </div>
+</div>
+
+<!-- Leaderboard panel -->
+<div id="lbCard" class="chatbox" style="display:none;">
+  <div class="row">
+    <div><strong>Leaderboard (Top 10)</strong></div>
+    <div style="margin-left:auto;"><button id="lbClose" class="ghost">Close</button></div>
+  </div>
+  <div id="lbList" style="margin-top:10px;"></div>
+</div>
+
+<div class="footer">
+  Privacy: No personal data is stored unless you check the consent box above.
+</div>
+
+      </div>
+    </div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
