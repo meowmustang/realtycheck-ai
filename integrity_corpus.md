@@ -1,21 +1,94 @@
-# Oberoi Realty — Integrity Corpus (Guide for IntegriBot)
+# Oberoi Realty — Integrity Corpus for IntegriBot
 
-## Core Principles
-- Honesty, Transparency, Fairness, Accountability, Compliance, Courage, Respect, EI.
+> Internal guidance for generating realistic, non-repetitive, SJT-style integrity dilemmas across roles.
+> Use this as *background knowledge* (do not quote). Prefer Indian corporate nuance when relevant.
 
-## High-risk Areas by Function
-- Procurement: gifts, vendor favoritism, bid rigging, spec manipulation.
-- Projects: safety shortcuts, substandard materials, fudged inspection reports.
-- Sales/Leasing: misrepresenting inventory, kickbacks, data privacy breaches.
-- Finance: expense falsification, revenue pull-ins, side agreements.
-- HR: reference fudging, favoritism, interview bias, confidential data handling.
-- Facilities/Operations: material misuse, attendance fraud, asset pilferage.
+---
 
-## Scenario Patterns (Situational Judgment style)
-- Gift/bribe pressure; conflict of interest; “hurry the approval” under deadline;
-- Safety vs timeline; concealment of errors; reporting senior misconduct;
-- Data privacy; vendor collusion; policy bypass “just this once”.
+## A. Core Values (anchor)
+- **Honesty** (truthful statements, no misrepresentation)
+- **Transparency** (disclosure, documentation, auditability)
+- **Fairness** (no favoritism, equal treatment, DEI)
+- **Accountability** (own mistakes, corrective action)
+- **Compliance** (policy, law, anti-bribery, data privacy)
+- **Courage** (refuse undue pressure, escalate properly)
+- **Respect & EI** (dignity, empathy, bystander intervention)
 
-## Evaluation Hints
-- Reward: disclosure, documentation, policy-first, escalation, refusal of undue pressure, rectify harm.
-- Penalize: concealment, retaliation, policy bypass, favoritism, personal gain.
+---
+
+## B. High-Risk Areas (by function)
+- **Projects/Construction:** safety shortcuts, substandard materials, forged inspection sign-offs, delaying NCRs.
+- **Procurement:** gifts/hospitality, vendor favoritism, split purchases, bid rigging, conflict of interest (COI).
+- **Sales/Leasing/CRM:** misrepresenting inventory/amenities, kickbacks, misuse of customer data, side promises.
+- **Finance/Accounts:** expense falsification, revenue pull-in, side letters, undocumented cash handling.
+- **HR/TA/L&D:** biased hiring, reference fabrication, payroll leaks, mishandling complaints.
+- **Facilities/O&M:** pilferage, asset misuse, attendance manipulation, maintenance corners cut.
+- **Legal/Compliance:** pressure to “wordsmith” to hide risk, delayed disclosures.
+- **IT/Data:** sharing credentials, weak access controls, customer data exports without consent.
+- **Admin/Vendor Mgmt:** fake attendance sheets, back-dated gate passes, opaque rate revisions.
+
+---
+
+## C. Stakeholders Catalog
+- Internal: direct manager, skip-level, peers, site engineers, QS, HSE, procurement, finance, HR, legal, IT.
+- External: vendor PM, subcontractor, client rep, landlord, customer, consultant, auditor, regulator, media.
+- Impacted groups: customers/end-users, on-site workforce, community, the brand.
+
+---
+
+## D. Constraint Catalog
+Use 2–3 per scenario; vary across dilemmas.
+- **Time:** deadline tonight, site inspection scheduled, client launch date imminent.
+- **Cost:** over-budget, liquidated damages risk, material wastage already high.
+- **Relationship:** long-term vendor/partner, politically connected client, family COI.
+- **Data/Safety:** PII involved, structural risk, public safety, environmental compliance.
+- **Reputation:** media attention, VIP visit, social media chatter.
+- **Ambiguity:** contradictory instructions, outdated SOP, missing approvals.
+
+---
+
+## E. Scenario Patterns (use variety)
+1. **Gift/Bribe Pressure** — vendor offers favors to fast-track/approve variations.
+2. **Conflict of Interest (COI)** — relative or prior employer is a bidding vendor.
+3. **Safety vs Timeline** — HSE flags ignored to meet milestone.
+4. **Substandard Materials/Specs** — cheaper substitute pushed as “equivalent”.
+5. **Data Privacy/Access** — request to export or share customer/employee data.
+6. **Report/Suppress Misconduct** — senior’s error; pressure to keep quiet.
+7. **Financial Misstatement** — back-date GRN/invoice; shift cost centers.
+8. **Bias/Harassment Bystanding** — overheard bias/harassment; duty to act.
+9. **Policy Bypass “Only this once”** — noncompliant shortcut framed as necessity.
+10. **Vendor Collusion** — similar bids; insider info leaking; sham competition.
+11. **Documentation Fudge** — “clean up” site photos/QA logs post-facto.
+12. **CSR/Community Impact** — ignore environmental/traffic/noise compliance.
+
+**For each scenario:** build a clear **ethical tension**, a short **what you do**, and include **escalation path** per policy.
+
+---
+
+## F. Red Flags & Cues
+- “Don’t overthink policy”, “everyone does this”, “I’ll make it worth your while”.
+- Non-email approvals, WhatsApp only, back-dated sign-offs, verbal commitments.
+- Missing three-way match, signature mismatches, altered drawings, reused QR codes.
+
+---
+
+## G. Evaluation Cheatsheet (for the model)
+- Reward: disclosure, documentation, policy-first, proportionate escalation (line manager → compliance/HSE/legal), refusal of gifts/COI, corrective action with stakeholder communication.
+- Penalize: concealment, retaliation, favoritism, bypasses, personal gain, unsafe acts.
+
+---
+
+## H. Style & Output Rules
+- Length 60–110 words. Professional tone. No real names. No confidential numbers.
+- Indian corporate/real-estate context acceptable.
+- Avoid repetition of exact wording across sessions.
+- Difficulty tag: `easy|medium|hard` ~ cognitive load + stakeholder complexity.
+
+---
+
+## I. Examples (micro skeletons)
+- **COI (Procurement):** relative in vendor team, pressure to stay on committee → disclose, recuse, ensure fair process.
+- **Safety (Projects):** scaffolding inspection skipped due to VIP visit → insist inspection, halt area, escalate to HSE.
+- **Data (Sales):** request to export customer list to external broker → refuse, cite policy, propose compliant approach.
+
+(Do not output these verbatim; use as inspiration only.)
