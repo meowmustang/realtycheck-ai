@@ -73,17 +73,21 @@ def openai_client():
 
 # ---------- prompts (Mistral-optimized) ----------
 PROMPT_SCENARIO_SYSTEM = (
-  "You are IntegriBot, the AI host of RealtyCheck, an integrity game for a Oberoi Realty intergrity value celebration event. "
-  "Your job is to write concise, realistic workplace integrity dilemma scenarios tailored to a participant's job role. "
-  "Each scenario should test ethical decision-making related to company values: Honesty, Respect, Responsibility, Fairness, Trust, Accountability, Courage, Emotional Intelligence. "
-  "The scenario should be 60–120 words, professionally worded, and avoid real names or confidential data. Keep it engaging"
+    "You are IntegriBot hosting RealtyCheck. Generate realistic, role-tailored, **non-repetitive** integrity dilemmas "
+    "in a real-estate/corporate context using SJT (situational judgement test) style. "
+    "Vary stakeholders, constraints (time/cost/legal), and ethical tensions (gift/COI/safety/data/whistleblowing). "
+    "Write in 60–110 words, professional tone, no real names or confidential data. "
+    "Prefer Indian corporate nuance when relevant."
 )
 
+# role_text will be “<Role>. <Hint>”
 PROMPT_SCENARIO_USER = (
+    "RANDOMIZER: {rand_tag}\n"
     "Role: {role_text}\n"
-    "Write ONE integrity dilemma this role could plausibly face in a real estate or corporate setting. "
-    "Return ONLY JSON and nothing else:\n"
-    '{{"scenario":"<text>","difficulty":"easy|medium|hard"}}'
+    "Using the attached Integrity Corpus (if any), propose **3 distinct** dilemmas of **different patterns**.\n"
+    "Respond as JSON ONLY (no markdown fences):\n"
+    "{{\"candidates\":[{{\"scenario\":\"<60-110 words>\",\"difficulty\":\"easy|medium|hard\"}},"
+    "{{\"scenario\":\"...\",\"difficulty\":\"...\"}},{{\"scenario\":\"...\",\"difficulty\":\"...\"}}]}}"
 )
 
 PROMPT_EVAL_SYSTEM = (
@@ -105,6 +109,24 @@ PROMPT_EVAL_USER = (
 )
 
 # ---------- utils ----------
+
+from collections import deque
+import random
+import time
+
+# RAM-only recent picks to reduce immediate repeats (not written to disk)
+RECENT = { "default": deque(maxlen=30) }
+
+def load_corpus_text(path="integrity_corpus.md", max_chars=12000):
+    if os.path.exists(path):
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                txt = f.read()[:max_chars]
+            return txt
+        except Exception:
+            return ""
+    return ""
+
 
 def save_score(entry: dict):
     os.makedirs(os.path.dirname(SCORE_FILE) or ".", exist_ok=True)
@@ -133,9 +155,8 @@ def ai_generate_scenario(role: str):
 
     def _fallback():
         text = (
-            f"As a {role}, a vendor hints at a personal favor to fast-track an approval. "
-            "Your manager is under deadline pressure. Reporting it could slow work and upset stakeholders, "
-            "but ignoring it risks violating anti-bribery policy. What would you do and why?"
+            f"As a {role}, a vendor hints at a personal favor to fast-track an approval. Your manager is under deadline "
+            "pressure. Reporting it could slow work, but ignoring it risks violating anti-bribery policy. What would you do and why?"
         )
         return {"scenario": text, "difficulty": "medium"}
 
@@ -143,30 +164,54 @@ def ai_generate_scenario(role: str):
         return _fallback()
 
     try:
+        # Build messages with optional corpus
         hint = ROLE_HINTS.get(role, "")
         role_text = f"{role}. {hint}" if hint else role
+        rand_tag = f"{int(time.time()*1000)}-{random.randint(1000,9999)}"
+        corpus = load_corpus_text()  # empty if file not present
+
+        messages = [{"role": "system", "content": PROMPT_SCENARIO_SYSTEM}]
+        if corpus:
+            messages.append({"role": "system", "content": f"Integrity Corpus (internal reference):\n{corpus}"})
+        messages.append({"role": "user", "content": PROMPT_SCENARIO_USER.format(role_text=role_text, rand_tag=rand_tag)})
+
         resp = client.chat.completions.create(
             model=MODEL,
-            temperature=0.5,
-            max_tokens=220,
-            messages=[
-                {"role": "system", "content": PROMPT_SCENARIO_SYSTEM + " Return JSON only, no code fences."},
-                {"role": "user", "content": PROMPT_SCENARIO_USER.format(role_text=role_text)}
-            ],
+            temperature=0.95,     # ↑ variety
+            top_p=0.95,
+            presence_penalty=0.4, # nudge novelty
+            frequency_penalty=0.4,
+            max_tokens=420,
+            messages=messages,
         )
-        text = (resp.choices[0].message.content or "").strip()
-        print("RAW LLM:", text[:200])  # ← leave this once
+        raw = (resp.choices[0].message.content or "").strip()
+        data = try_parse_json(raw)
+        cands = data.get("candidates") or []
 
-        data = try_parse_json(text)
-        print("PARSED KEYS:", list(data.keys()))
+        # Pick one at random; minimal RAM-only repeat guard
+        if not cands:
+            return _fallback()
 
-        scenario = (data.get("scenario") or data.get("text") or data.get("message") or text).strip()
-        difficulty = (data.get("difficulty") or "medium").strip()
+        # Normalize and try to avoid immediate repeats in this process only
+        bucket = RECENT.setdefault(role, deque(maxlen=30))
+        random.shuffle(cands)
+        chosen = None
+        for c in cands:
+            s = (c.get("scenario") or "").strip()
+            key = s.lower()[:180]
+            if s and key not in bucket:
+                chosen = c
+                bucket.append(key)
+                break
+        if not chosen:
+            chosen = cands[0]  # all were similar; still return something
 
-        return {"scenario": scenario[:700], "difficulty": difficulty}
+        scenario = (chosen.get("scenario") or "").strip()
+        difficulty = (chosen.get("difficulty") or "medium").strip()
+        return {"scenario": scenario[:900], "difficulty": difficulty}
+
     except Exception as e:
-        import traceback
-        print("❌ Scenario gen error -> fallback:\n", traceback.format_exc())
+        print("❌ Scenario gen error -> fallback:", repr(e))
         return _fallback()
 
 
