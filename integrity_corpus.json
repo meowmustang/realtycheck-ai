@@ -1,0 +1,22 @@
+{
+  "length": { "min": 60, "max": 110 },
+  "pattern_weights": {
+    "Gift/Bribe Pressure": 1.0,
+    "Conflict of Interest (COI)": 1.0,
+    "Safety vs Timeline": 1.1,
+    "Substandard Materials/Specs": 1.1,
+    "Data Privacy/Access": 1.0,
+    "Report/Suppress Misconduct": 1.0,
+    "Financial Misstatement": 1.0,
+    "Bias/Harassment Bystanding": 0.9,
+    "Policy Bypass \"Only this once\"": 1.0,
+    "Vendor Collusion": 0.9,
+    "Documentation Fudge": 1.0,
+    "CSR/Community Impact": 0.8
+  },
+  "stakeholders": ["manager","HSE","QA/QC","procurement","finance","legal","HR","IT","vendor PM","client rep","auditor","regulator"],
+  "constraints": ["deadline","budget overrun","relationship risk","public safety","media attention","ambiguous SOP","PII data","environmental permit"],
+  "banned_phrases": ["don’t overthink policy","just this once","everyone does this"],
+  "region": "India",
+  "escalation_hint": "Line manager → function owner (HSE/Legal/Compliance) → Ethics hotline if unresolved."
+}
