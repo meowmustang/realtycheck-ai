@@ -111,21 +111,28 @@ PROMPT_EVAL_USER = (
 # ---------- utils ----------
 
 from collections import deque
-import random
-import time
+import random, time
 
-# RAM-only recent picks to reduce immediate repeats (not written to disk)
-RECENT = { "default": deque(maxlen=30) }
+RECENT = {"default": deque(maxlen=30)}
 
-def load_corpus_text(path="integrity_corpus.md", max_chars=12000):
-    if os.path.exists(path):
-        try:
+def load_corpus_text(path="integrity_corpus.md", max_chars=16000):
+    try:
+        if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as f:
-                txt = f.read()[:max_chars]
-            return txt
-        except Exception:
-            return ""
+                return f.read()[:max_chars]
+    except Exception:
+        pass
     return ""
+
+def load_corpus_json(path="integrity_corpus.json"):
+    try:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
 
 
 def save_score(entry: dict):
@@ -154,61 +161,96 @@ def ai_generate_scenario(role: str):
     client = openai_client()
 
     def _fallback():
-        text = (
-            f"As a {role}, a vendor hints at a personal favor to fast-track an approval. Your manager is under deadline "
-            "pressure. Reporting it could slow work, but ignoring it risks violating anti-bribery policy. What would you do and why?"
-        )
+        text = (f"As a {role}, a vendor hints at a personal favor to fast-track an approval. "
+                "Your manager is under deadline pressure. Reporting could delay work; ignoring risks anti-bribery breach. "
+                "What would you do and why?")
         return {"scenario": text, "difficulty": "medium"}
 
     if client is None:
         return _fallback()
 
     try:
-        # Build messages with optional corpus
         hint = ROLE_HINTS.get(role, "")
         role_text = f"{role}. {hint}" if hint else role
         rand_tag = f"{int(time.time()*1000)}-{random.randint(1000,9999)}"
-        corpus = load_corpus_text()  # empty if file not present
 
-        messages = [{"role": "system", "content": PROMPT_SCENARIO_SYSTEM}]
-        if corpus:
-            messages.append({"role": "system", "content": f"Integrity Corpus (internal reference):\n{corpus}"})
-        messages.append({"role": "user", "content": PROMPT_SCENARIO_USER.format(role_text=role_text, rand_tag=rand_tag)})
+        # Load corpora
+        corpus_md = load_corpus_text()
+        corpus_json = load_corpus_json()
+
+        # Sample steering hints from JSON (for diversity)
+        patterns = list((corpus_json.get("pattern_weights") or {}).items())
+        chosen_patterns = []
+        if patterns:
+            # weighted sample up to 3 different patterns
+            total = sum(w for _, w in patterns)
+            for _ in range(3):
+                r = random.random() * total
+                acc = 0.0
+                for p, w in patterns:
+                    acc += w
+                    if r <= acc and p not in chosen_patterns:
+                        chosen_patterns.append(p)
+                        break
+        # extra catalogs
+        stakeholders = corpus_json.get("stakeholders") or []
+        constraints = corpus_json.get("constraints") or []
+        region = corpus_json.get("region") or "India"
+        escalation_hint = corpus_json.get("escalation_hint") or ""
+        banned = corpus_json.get("banned_phrases") or []
+
+        # Build messages
+        sys = PROMPT_SCENARIO_SYSTEM
+        if corpus_md:
+            sys += "\n\nIntegrity Corpus (reference only, do not quote):\n" + corpus_md
+
+        steer = {
+            "region": region,
+            "prefer_patterns": chosen_patterns[:3] or ["Safety vs Timeline","Conflict of Interest (COI)","Data Privacy/Access"],
+            "sample_stakeholders": random.sample(stakeholders, k=min(3, len(stakeholders))) if stakeholders else [],
+            "sample_constraints": random.sample(constraints, k=min(3, len(constraints))) if constraints else [],
+            "avoid_phrases": banned,
+            "escalation_hint": escalation_hint
+        }
+
+        messages = [
+            {"role": "system", "content": sys},
+            {"role": "system", "content": f"Steering JSON (for variety, do not output): {json.dumps(steer)}"},
+            {"role": "user", "content": PROMPT_SCENARIO_USER.format(role_text=role_text, rand_tag=rand_tag)}
+        ]
 
         resp = client.chat.completions.create(
             model=MODEL,
-            temperature=0.95,     # ↑ variety
+            temperature=0.95,
             top_p=0.95,
-            presence_penalty=0.4, # nudge novelty
-            frequency_penalty=0.4,
-            max_tokens=420,
+            presence_penalty=0.45,
+            frequency_penalty=0.35,
+            max_tokens=480,
             messages=messages,
         )
+
         raw = (resp.choices[0].message.content or "").strip()
         data = try_parse_json(raw)
         cands = data.get("candidates") or []
-
-        # Pick one at random; minimal RAM-only repeat guard
         if not cands:
             return _fallback()
 
-        # Normalize and try to avoid immediate repeats in this process only
         bucket = RECENT.setdefault(role, deque(maxlen=30))
         random.shuffle(cands)
         chosen = None
         for c in cands:
             s = (c.get("scenario") or "").strip()
-            key = s.lower()[:180]
+            key = s.lower()[:220]
             if s and key not in bucket:
-                chosen = c
                 bucket.append(key)
+                chosen = c
                 break
         if not chosen:
-            chosen = cands[0]  # all were similar; still return something
+            chosen = cands[0]
 
         scenario = (chosen.get("scenario") or "").strip()
         difficulty = (chosen.get("difficulty") or "medium").strip()
-        return {"scenario": scenario[:900], "difficulty": difficulty}
+        return {"scenario": scenario[:1000], "difficulty": difficulty}
 
     except Exception as e:
         print("❌ Scenario gen error -> fallback:", repr(e))
