@@ -1,4 +1,3 @@
-# app.py — RealtyCheck / IntegriBot (LLM7 compatible, crash-proof)
 
 import os, json, re
 from flask import Flask, render_template, request, jsonify
@@ -52,7 +51,7 @@ SCORE_FILE = "scores.jsonl"
 
 # --- env & client ---
 load_dotenv()
-print("✅ .env loaded | OPENAI_API_KEY starts with:", (os.getenv("OPENAI_API_KEY") or "")[:8])
+print(" .env loaded | OPENAI_API_KEY starts with:", (os.getenv("OPENAI_API_KEY") or "")[:8])
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "unused")
 MODEL = os.getenv("OPENAI_MODEL", "mistral-small-3.1-24b-instruct-2503")  # LLM7 default
@@ -71,7 +70,7 @@ def openai_client():
         return None
     return OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
 
-# ---------- prompts (Mistral-optimized) ----------
+# ---------- prompts (Mistral) ----------
 PROMPT_SCENARIO_SYSTEM = (
     "You are IntegriBot hosting RealtyCheck. Generate realistic, role-tailored, **non-repetitive** integrity dilemmas "
     "in a real-estate/corporate context using SJT (situational judgement test) style. "
@@ -155,7 +154,7 @@ def try_parse_json(s: str) -> dict:
         return {}
 
 
-# ---------- AI: scenario ----------
+# ---------- scenario ----------
 
 def ai_generate_scenario(role: str):
     client = openai_client()
@@ -253,11 +252,11 @@ def ai_generate_scenario(role: str):
         return {"scenario": scenario[:1000], "difficulty": difficulty}
 
     except Exception as e:
-        print("❌ Scenario gen error -> fallback:", repr(e))
+        print("Scenario gen error -> fallback:", repr(e))
         return _fallback()
 
 
-# ---------- AI: evaluation ----------
+# ---------- evaluation ----------
 def ai_evaluate(role: str, scenario: str, response_text: str):
     client = openai_client()
 
@@ -299,7 +298,7 @@ def ai_evaluate(role: str, scenario: str, response_text: str):
 
         return {"score": score, "feedback": feedback, "criteria": criteria}
     except Exception as e:
-        print("❌ Evaluation error -> heuristic:", repr(e))
+        print("Evaluation error -> heuristic:", repr(e))
         return _heuristic()
 
 # ---------- routes ----------
