@@ -92,3 +92,24 @@ Use 2–3 per scenario; vary across dilemmas.
 - **Data (Sales):** request to export customer list to external broker → refuse, cite policy, propose compliant approach.
 
 (Do not output these verbatim; use as inspiration only.)
+
+---
+
+## J. Psychometric Anchors
+When crafting dilemmas, emulate **Situational Judgement Test (SJT)** psychometric tone:
+- Focus on *ambiguity under ethical stress*, not black-and-white choices.
+- Reflect **organizational citizenship**, **policy adherence**, and **moral courage**.
+- Avoid overly heroic or villainous framing.
+- Encourage reflection on “what is right” vs “what is convenient”.
+- Example keywords for realism: *deadline*, *vendor*, *audit trail*, *non-conformance*, *escalation matrix*, *policy circular*, *stakeholder pressure*, *approval delay*.
+
+---
+
+## K. Evaluation Weight (implicit)
+Scenarios should indirectly test:
+- **Integrity under pressure (25%)**
+- **Transparency and documentation (20%)**
+- **Fairness and compliance (20%)**
+- **Courage to escalate or refuse (20%)**
+- **Respectful and balanced communication (15%)**
+
