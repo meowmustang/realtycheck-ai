@@ -50,25 +50,33 @@ SCORE_FILE = "scores.jsonl"
 
 
 # --- env & client ---
-load_dotenv()
-print(" .env loaded | OPENAI_API_KEY starts with:", (os.getenv("OPENAI_API_KEY") or "")[:8])
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "unused")
-MODEL = os.getenv("OPENAI_MODEL", "mistral-small-3.1-24b-instruct-2503")  # LLM7 default
-BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.llm7.io/v1")
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
+MODEL = os.getenv("OPENAI_MODEL", "openrouter/polaris-alpha")
 STORE_LOGS = os.getenv("STORE_LOGS", "false").lower() == "true"
 LOG_FILE = "logs.jsonl"
 
 app = Flask(__name__)
 
+if OPENAI_API_KEY:
+    print(f"✅ .env loaded | Using OpenRouter model: {MODEL}")
+else:
+    print("⚠️  Missing OPENAI_API_KEY in environment — fallback mode active")
+
 def openai_client():
-    """
-    OpenAI-compatible client (LLM7 via base_url).
-    Treat placeholder keys as 'no key' → offline mode.
-    """
-    if not OPENAI_API_KEY or OPENAI_API_KEY.strip().lower() in {"unused", "none", "your_key_here"}:
+    """Initialize OpenRouter-compatible OpenAI client."""
+    try:
+        if not OPENAI_API_KEY:
+            print("⚠️ No API key detected — offline mode active")
+            return None
+        client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL)
+        return client
+    except Exception as e:
+        print("❌ Failed to initialize OpenAI client:", e)
         return None
-    return OpenAI(base_url=BASE_URL, api_key=OPENAI_API_KEY)
 
 # ---------- prompts (Mistral) ----------
 PROMPT_SCENARIO_SYSTEM = (
@@ -220,7 +228,7 @@ def ai_generate_scenario(role: str):
 
         resp = client.chat.completions.create(
             model=MODEL,
-            temperature=0.95,
+            temperature=0.85,
             top_p=0.95,
             presence_penalty=0.45,
             frequency_penalty=0.35,
