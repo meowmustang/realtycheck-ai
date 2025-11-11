@@ -80,22 +80,41 @@ def openai_client():
 
 # ---------- prompts (Mistral) ----------
 PROMPT_SCENARIO_SYSTEM = (
-    "You are IntegriBot hosting RealtyCheck. Generate realistic, role-tailored, **non-repetitive** integrity dilemmas "
-    "in a real-estate/corporate context using SJT (situational judgement test) style. "
-    "Vary stakeholders, constraints (time/cost/legal), and ethical tensions (gift/COI/safety/data/whistleblowing). "
-    "Write in 60–110 words, professional tone, no real names or confidential data. "
-    "Prefer Indian corporate nuance when relevant."
+    "You are IntegriBot, the official integrity simulation host for Oberoi Realty’s RealtyCheck challenge. "
+    "Your task is to generate **psychometrically balanced**, **realistic**, and **non-repetitive** integrity dilemmas "
+    "for participants based on their corporate role and the provided corpus. "
+    "Each scenario should mirror professional *Situational Judgement Tests (SJTs)* used in corporate integrity assessments. "
+    "Blend ethical, procedural, and emotional tension — not just rule-breaking. "
+    "Prefer subtle dilemmas involving trade-offs between delivery pressure, honesty, and compliance."
+    "\n\n"
+    "Each scenario must:\n"
+    "• Be 60–110 words long and read like a realistic situation (no storybook tone).\n"
+    "• Use a **neutral yet vivid** narrative that mirrors a real corporate context.\n"
+    "• End with a clear **decision question** testing ethics, escalation, or courage.\n"
+    "• Include plausible stakeholders (manager, vendor, consultant, client, etc.) and real-world constraints (timeline, cost, safety, etc.).\n"
+    "• Avoid names, numbers, and fictional fluff.\n"
+    "• Maintain professional tone aligned with Indian corporate and real-estate sector.\n\n"
+    "Scenarios should reflect **SJT constructs** such as honesty under pressure, fairness, reporting misconduct, resisting bias, or speaking up.\n"
+    "Vary themes across each generation (gifts, data, safety, COI, bias, financial accuracy, etc.).\n"
 )
 
 # role_text will be “<Role>. <Hint>”
 PROMPT_SCENARIO_USER = (
     "RANDOMIZER: {rand_tag}\n"
-    "Role: {role_text}\n"
-    "Using the attached Integrity Corpus (if any), propose **3 distinct** dilemmas of **different patterns**.\n"
-    "Respond as JSON ONLY (no markdown fences):\n"
-    "{{\"candidates\":[{{\"scenario\":\"<60-110 words>\",\"difficulty\":\"easy|medium|hard\"}},"
+    "Role Context: {role_text}\n\n"
+    "Use the attached Integrity Corpus for reference and realism.\n"
+    "Now generate **3 distinct, high-quality scenarios** of different integrity patterns.\n\n"
+    "Each scenario should:\n"
+    "• Be self-contained (1–2 paragraphs, 60–110 words).\n"
+    "• Reflect an ethical dilemma relevant to the role.\n"
+    "• Feel authentic to a real corporate or project environment.\n"
+    "• Include the nature of pressure or ambiguity subtly — not exaggerated.\n"
+    "• End with a reflective question that tests integrity or escalation.\n\n"
+    "Respond strictly in JSON format only:\n"
+    "{{\"candidates\":[{{\"scenario\":\"<text>\",\"difficulty\":\"easy|medium|hard\"}},"
     "{{\"scenario\":\"...\",\"difficulty\":\"...\"}},{{\"scenario\":\"...\",\"difficulty\":\"...\"}}]}}"
 )
+
 
 PROMPT_EVAL_SYSTEM = (
     "You are IntegriBot, the evaluator for RealtyCheck. "
