@@ -18,8 +18,11 @@ function showLoadingPopup() {
   const text = document.getElementById("loadingText");
   popup.style.display = "flex";
 
-  let i = 0;
+  // Start from a random quote index each time
+  let i = Math.floor(Math.random() * quotes.length);
   text.innerText = quotes[i];
+
+  // Change quote every 5 seconds
   quoteInterval = setInterval(() => {
     i = (i + 1) % quotes.length;
     text.innerText = quotes[i];
