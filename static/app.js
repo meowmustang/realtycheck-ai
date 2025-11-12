@@ -1,4 +1,37 @@
-// static/app.js — single source of truth
+// static/app.js 
+
+// INTEGRITY LOADING POPUP
+
+const quotes = [
+  "“Integrity is doing the right thing, even when no one is watching.” – C.S. Lewis",
+  "“Real integrity is doing the right thing, knowing that nobody’s going to know whether you did it or not.” – Oprah Winfrey",
+  "“Wisdom is knowing the right path to take… Integrity is taking it.” – M.H. McKee",
+  "“Integrity is choosing your thoughts and actions based on values, not personal gain.” – Unknown",
+  "“The time is always right to do what is right.” – Martin Luther King Jr.",
+  "“You are what you do, not what you say you’ll do.” – Carl Jung"
+];
+
+let quoteInterval = null;
+
+function showLoadingPopup() {
+  const popup = document.getElementById("loadingPopup");
+  const text = document.getElementById("loadingText");
+  popup.style.display = "flex";
+
+  let i = 0;
+  text.innerText = quotes[i];
+  quoteInterval = setInterval(() => {
+    i = (i + 1) % quotes.length;
+    text.innerText = quotes[i];
+  }, 5000);
+}
+
+function hideLoadingPopup() {
+  const popup = document.getElementById("loadingPopup");
+  popup.style.display = "none";
+  clearInterval(quoteInterval);
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const $ = (id) => document.getElementById(id);
