@@ -44,32 +44,44 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---- Actions
-  async function genScenario() {
-    const name = $('name').value.trim();
-    const role = $('role').value.trim();
-    if (!name || !role) { alert('Please enter your name and role.'); return; }
+  
+async function genScenario() {
+  const name = document.getElementById('name').value.trim();
+  const role = document.getElementById('role').value.trim();
+  if (!name || !role) { alert('Please enter your name and role.'); return; }
 
+  showLoadingPopup(); // 🔹 Start loading popup
+
+  try {
     const res = await fetch('/generate_scenario', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ name, role })
     });
     const data = await res.json();
 
     window.__scenario = data;
-    $('greet').innerText = `Hi ${name}! IntegriBot has prepared a scenario for the ${role} role.`;
-    $('scenarioText').innerText = data.scenario || 'No scenario generated.';
-    $('scenarioCard').style.display = 'block';
-    $('resultCard').style.display = 'none';
-    $('lbCard').style.display = 'none';
-    $('response').value = "";
+    document.getElementById('greet').innerText = `Hi ${name}! IntegriBot has prepared a scenario for the ${role} role.`;
+    document.getElementById('scenarioText').innerText = data.scenario || 'No scenario generated.';
+    document.getElementById('scenarioCard').style.display = 'block';
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('lbCard').style.display = 'none';
+    document.getElementById('response').value = "";
+  } catch (err) {
+    alert("Oops! Something went wrong while generating your scenario.");
+  } finally {
+    hideLoadingPopup(); // 🔹 Stop loading popup
   }
+}
 
-  async function submitResponse() {
-    const role = $('role').value.trim();
-    const response_text = $('response').value.trim();
-    if (!response_text) { alert('Please type your response.'); return; }
+async function submitResponse() {
+  const role = document.getElementById('role').value.trim();
+  const response_text = document.getElementById('response').value.trim();
+  if (!response_text) { alert('Please type your response.'); return; }
 
+  showLoadingPopup(); // 🔹 Start loading popup
+
+  try {
     const payload = {
       role,
       scenario: (window.__scenario && window.__scenario.scenario) || '',
@@ -78,16 +90,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const res = await fetch('/evaluate', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(payload)
     });
     const data = await res.json();
 
-    $('feedback').innerText = data.feedback || '(No feedback)';
-    $('criteria').innerText = data.criteria ? `Criteria: ${data.criteria}` : '';
+    document.getElementById('feedback').innerText = data.feedback || '(No feedback)';
+    document.getElementById('criteria').innerText = data.criteria ? `Criteria: ${data.criteria}` : '';
     setMeter(data.score ?? 0);
-    $('resultCard').style.display = 'block';
+    document.getElementById('resultCard').style.display = 'block';
+  } catch (err) {
+    alert("Something went wrong while evaluating your response.");
+  } finally {
+    hideLoadingPopup(); // 🔹 Stop loading popup
   }
+}
+
 
   async function saveScore() {
     const name = $('name').value.trim();
